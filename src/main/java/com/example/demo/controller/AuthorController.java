@@ -5,6 +5,7 @@ import com.example.demo.model.Author;
 import com.example.demo.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
@@ -22,25 +23,21 @@ public class AuthorController {
     @Autowired
     private AuthorService authorService;
 
-    @GetMapping("/authors")
+    @GetMapping(value = "/authors", produces = "application/hal+json")
     public Resources<Author> getAllAuthors() {
         List<Author> allAuthors = authorService.retrieveAllAuthor();
 
-//        for (Author author:allAuthors) {
-//            Integer authorId = author.getAuthorId();
-//            Link selfLink = ControllerLinkBuilder
-//                    .linkTo(AuthorController.class)
-//                    .slash(authorId)
-//                    .withSelfRel();
-//          }
-
-            Link selfRelLink = ControllerLinkBuilder.linkTo(
+        for (Author author:allAuthors) {
+            Integer authorId = author.getAuthorId();
+            Link selfRelLink = linkTo(
                     ControllerLinkBuilder.methodOn(AuthorController.class)
-                            .getAllAuthors())
-                            .withSelfRel();
+                            .getAuthorByAuthorId(authorId))
+                    .withSelfRel();
+            author.add(selfRelLink);
+          }
 
-        Resources<Author> resources = new Resources<>(allAuthors);
-        resources.add(selfRelLink);
+        Link link = linkTo(AuthorController.class).withSelfRel();
+        Resources<Author> resources = new Resources<Author>(allAuthors,link);
         return resources;
     }
 

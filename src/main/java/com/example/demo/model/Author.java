@@ -3,11 +3,12 @@ package com.example.demo.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.hateoas.ResourceSupport;
+
 
 @Getter @Setter
 @NoArgsConstructor
-public class Author {
+public class Author extends ResourceSupport {
     private Integer authorId;
     private String firstName;
     private String lastName;
